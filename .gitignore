@@ -10,7 +10,7 @@ event/.pnp
 event/coverage
 
 # production
-# event/build
+event/build
 
 # misc
 .DS_Store
