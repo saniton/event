@@ -110,7 +110,7 @@ app.post('/api/tokenVerify', (req, res) => {
   }
 });
 
-app.get('/event/getUserData/:qrNumber', async (req, res) => {
+app.get('/getUserData/:qrNumber', async (req, res) => {
   const { qrNumber } = req.params;
 
   try {
@@ -125,7 +125,7 @@ app.get('/event/getUserData/:qrNumber', async (req, res) => {
   }
 });
 
-app.get('/event/getData/:qrNumber', async (req, res) => {
+app.get('/getData/:qrNumber', async (req, res) => {
   const { qrNumber } = req.params;
 
   try {
@@ -205,7 +205,7 @@ app.post('/saveBoothData', async (req, res) => {
   }
 });
 
-app.get('/event/getBoothData/:boothNumber', async (req, res) => {
+app.get('/getBoothData/:boothNumber', async (req, res) => {
   const { boothNumber } = req.params;
 
   try {
