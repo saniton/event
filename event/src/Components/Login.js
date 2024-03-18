@@ -26,6 +26,7 @@ const Login = () => {
         localStorage.setItem('userName', data.user.name); // Store the user's email
         localStorage.setItem('userEmail', data.user.email); // Store the user's email
         localStorage.setItem('userPhoneNumber', data.user.phoneNumber); // Store the user's email
+        localStorage.setItem('userQR', qrNumber);
 
 
         window.location.href = `./getData/${qrNumber}`;

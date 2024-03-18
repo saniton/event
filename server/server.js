@@ -221,6 +221,87 @@ app.get('/getBoothData/:boothNumber', async (req, res) => {
 });
 
 
+
+const connectionSchema = new mongoose.Schema({
+  reciverEmail: { type: String, required: true },
+  senderQR: { type: Number, required: true },
+  userEmail: { type: String, required: true },
+  userName: { type: String, required: true },
+  userPhoneNumber: { type: String, required: true },
+  connectionTime: { type: Date, default: Date.now }
+});
+
+const Connection = mongoose.model('connections', connectionSchema);
+
+app.post('/connections', async (req, res) => {
+  try {
+    const { userQR, userEmail, userName, userPhoneNumber, reciverEmail } = req.body;
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const senderQR = parseInt(userQR)
+
+    // Check if guestQR is a valid number
+    console.log('sYSTEM SERVER, QR CODE NUMB: ', senderQR, 'API /connections DATA:', req.body);
+
+    if (typeof senderQR !== 'number' || isNaN(senderQR)) {
+      return res.status(400).json({ error: 'Invalid QR number.' });
+    }
+
+    // if (!emailRegex.test(userEmail) || !emailRegex.test(reciverEmail)){
+    //   return res.status(400).json({ error: 'Not a valid email' });
+    // }
+
+    // Find the user with the provided QR number
+    const userData = await UserData.findOne({ qrNumber: senderQR });
+
+    if (!userData) {
+      return res.status(404).json({ error: 'User data not found for the provided QR number.' });
+    }
+
+    // Create a new connection
+    const newConnection = new Connection({
+      reciverEmail,
+      senderQR,
+      userEmail,
+      userName,
+      userPhoneNumber
+    });
+
+      // Save the connection to the database
+      await newConnection.save();
+    
+      return res.status(200).json({ message: 'Connection stored successfully.' });
+
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Duplicate entry. Connection already exists.' });
+    }
+    console.error(error); 
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+app.get('/connections', async (req, res) => {
+  try {
+    const connections = await Connection.find();
+    const groupedConnections = {};
+
+    connections.forEach(connection => {
+      const { reciverEmail, ...data } = connection.toObject();
+      if (!groupedConnections[reciverEmail]) {
+        groupedConnections[reciverEmail] = [];
+      }
+      groupedConnections[reciverEmail].push(data);
+    });
+
+    res.status(200).json(groupedConnections);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
