@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import emailjs from 'emailjs-com';
 import './PhoneNumberLogin.css'
 
-const DisplayPage = () => {
+const Display3 = () => {
   const [userData, setUserData] = useState(null);
   const [loginError, setLoginError] = useState(false);
   const { qrNumber } = useParams();
@@ -66,13 +66,16 @@ const DisplayPage = () => {
       const userQR = localStorage.getItem('userQR');
       console.log('---',userData.email)
       
-      const response = await fetch('https://event-server2.onrender.com/connections', {
+      const response = await fetch('http://localhost:3001/connections', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          reciverQR : userData.qrNumber,
           reciverEmail : userData.email,
+          reciverName : userData.name,
+          reciverPhoneNumber : userData.phoneNumber,
           userQR,
           userEmail,
           userName,
@@ -137,4 +140,4 @@ const DisplayPage = () => {
   );
 };
 
-export default DisplayPage;
+export default Display3;

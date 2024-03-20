@@ -223,7 +223,10 @@ app.get('/getBoothData/:boothNumber', async (req, res) => {
 
 
 const connectionSchema = new mongoose.Schema({
+  reciverQR: { type: Number, required: true },
   reciverEmail: { type: String, required: true },
+  reciverName: { type: String, required: true },
+  reciverPhoneNumber: { type: String, required: true },
   senderQR: { type: Number, required: true },
   userEmail: { type: String, required: true },
   userName: { type: String, required: true },
@@ -235,8 +238,8 @@ const Connection = mongoose.model('connections', connectionSchema);
 
 app.post('/connections', async (req, res) => {
   try {
-    const { userQR, userEmail, userName, userPhoneNumber, reciverEmail } = req.body;
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const { userQR, userEmail, userName, userPhoneNumber, reciverEmail, reciverQR, reciverName, reciverPhoneNumber } = req.body;
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+/;
     const senderQR = parseInt(userQR)
 
     // Check if guestQR is a valid number
@@ -259,26 +262,30 @@ app.post('/connections', async (req, res) => {
 
     // Create a new connection
     const newConnection = new Connection({
+      reciverQR,
       reciverEmail,
+      reciverName,
+      reciverPhoneNumber,
       senderQR,
       userEmail,
       userName,
       userPhoneNumber
     });
 
-      // Save the connection to the database
-      await newConnection.save();
-    
-      return res.status(200).json({ message: 'Connection stored successfully.' });
+    // Save the connection to the database
+    await newConnection.save();
+
+    return res.status(200).json({ message: 'Connection stored successfully.' });
 
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({ error: 'Duplicate entry. Connection already exists.' });
     }
-    console.error(error); 
+    console.error(error);
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
 
 app.get('/connections', async (req, res) => {
   try {
@@ -300,6 +307,26 @@ app.get('/connections', async (req, res) => {
   }
 });
 
+
+app.get('/userConnections', async (req, res) => {
+  try {
+    const connections = await Connection.find();
+    const groupedConnections = {};
+
+    connections.forEach(connection => {
+      const { userEmail, ...data } = connection.toObject();
+      if (!groupedConnections[userEmail]) {
+        groupedConnections[userEmail] = [];
+      }
+      groupedConnections[userEmail].push(data);
+    });
+
+    res.status(200).json(groupedConnections);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
 
 
 app.listen(PORT, () => {
