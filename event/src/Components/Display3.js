@@ -66,7 +66,7 @@ const Display3 = () => {
       const userQR = localStorage.getItem('userQR');
       console.log('---',userData.email)
       
-      const response = await fetch('http://localhost:3001/connections', {
+      const response = await fetch('https://event-server2.onrender.com/connections', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

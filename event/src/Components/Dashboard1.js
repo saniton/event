@@ -6,7 +6,7 @@ function Dashboard1() {
 
   useEffect(() => {
     // Fetch data from API
-    fetch('http://localhost:3001/userConnections') // Update endpoint
+    fetch('https://event-server2.onrender.com/userConnections') // Update endpoint
       .then(response => response.json())
       .then(data => setConnections(data))
       .catch(error => console.error(error));

@@ -6,7 +6,7 @@ function Dashboard() {
 
   useEffect(() => {
     // Fetch data from API
-    fetch('http://localhost:3001/connections')
+    fetch('https://event-server2.onrender.com/connections')
       .then(response => response.json())
       .then(data => setConnections(data))
       .catch(error => console.error(error));
@@ -81,3 +81,7 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+
+
+
