@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-// import emailjs from 'emailjs-com';
+import emailjs from 'emailjs-com';
 import './BoothReg.css';
 
 const BoothDisp = () => {
@@ -60,50 +60,80 @@ const BoothDisp = () => {
   };
 
   const handleSubmit = async () => {
-    try {
     const userEmail = localStorage.getItem('userEmail');
-      const userName = localStorage.getItem('userName');
-      const userPhoneNumber = localStorage.getItem('userPhoneNumber');
-      const userQR = localStorage.getItem('userQR');
-      console.log('---',boothData.email)
-      
-      const response = await fetch('https://event-server2.onrender.com/connections', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          reciverQR : boothData.boothNumber,
-          reciverEmail : boothData.email,
-          reciverName : boothData.boothName,
-          reciverPhoneNumber : boothData.phoneNumber,
-          userQR,
-          userEmail,
-          userName,
-          userPhoneNumber
-        }),
-      });
+    const userName = localStorage.getItem('userName');
+    const userPhoneNumber = localStorage.getItem('userPhoneNumber');
 
-      if (response.ok) {
-        alert(`${response.ok} got response 200!`)
-        // Connection successful
-        // You can perform further actions here if needed
+    try {
+      const templateParams = {
+        to_name: boothData.boothName,
+        to_email: boothData.email,
+        to_phone_number: boothData.phoneNumber,
+        name: userName,
+        email: userEmail,
+        phone_number: userPhoneNumber,
+      };
+
+      const result = await emailjs.send(
+        'service_bnz3qy9',
+        'template_jggssck',
+        templateParams,
+        'Acnzw1AS8KGhKspGo'
+      );
+
+      console.log(result);
+
+      if (result.text === 'OK') {
+        alert('Email sent successfully!');
       } else {
-        // Connection failed
-        console.log(response);
+        alert('Failed to send email.');
       }
     } catch (error) {
-      console.error('Error during connection:', error);
+      console.error('Error sending email:', error);
+      alert('Failed to send email. Please try again.');
     }
-  }
+
+    try {
+      if (!userEmail) {
+        console.error('User email not found in localStorage.');
+        alert('Failed to send email. User email not found.');
+        return;
+      }
+      const templateParams = {
+        name: userName,
+        email: userEmail,
+        phoneNumber: userPhoneNumber,
+        to_email: boothData.email,
+        to_name: boothData.boothName,
+        to_phone_number: boothData.phoneNumber,
+      };
+
+      const result = await emailjs.send(
+        'service_bnz3qy9',
+        'template_mophnb9',
+        templateParams,
+        'Acnzw1AS8KGhKspGo'
+      );
+
+      console.log(result);
+
+      if (result.text === 'OK') {
+        alert('Email sent successfully!');
+      } else {
+        alert('Failed to send email.');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Failed to send email. Please try again.');
+    }
+  };
 
   useEffect(() => {
     if (!presentToken && presentToken.length < 10) {
       window.location.href = '/login';
     }
-    
-    verifyToken();
 
+    verifyToken();
   }, []);
 
   return (

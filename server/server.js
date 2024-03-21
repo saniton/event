@@ -300,7 +300,23 @@ app.get('/connections', async (req, res) => {
       groupedConnections[reciverEmail].push(data);
     });
 
-    res.status(200).json(groupedConnections);
+    const connections2 = await Connection.find();
+    const groupedConnections2 = {};
+
+    connections2.forEach(connection2 => {
+      const { userEmail, ...data } = connection2.toObject();
+      if (!groupedConnections2[userEmail]) {
+        groupedConnections2[userEmail] = [];
+      }
+      groupedConnections2[userEmail].push(data);
+    });
+    console.log(groupedConnections2)
+    const data = {
+      reciverData : groupedConnections,
+      userData : groupedConnections2,
+
+    }
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error.' });
